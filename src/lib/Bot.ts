@@ -4,6 +4,8 @@ import Commands from '../commands';
 import { Command } from '../types/Command';
 import { CommandArgs } from '../types/CommandArgs';
 import Mongodb from './Mongodb';
+import SaveRMAction from '../commands/SaveRM/action';
+import SaveScrapAction from '../commands/SaveScrap/action';
 
 const runBot = (token: string|undefined) => {
   if (!token) {
@@ -11,8 +13,20 @@ const runBot = (token: string|undefined) => {
     return;
   }
 
-  const onMessage = (msg: Discord.Message) => {
+  const onMessage = async (msg: Discord.Message) => {
+    if (msg.author.bot) return;
+
     const { commandPrefix } = AppConfig;
+
+    const commandArgs: CommandArgs = {
+      msg,
+    };
+
+    if (msg.channelId === AppConfig.rareMetalChannelId) {
+      await SaveRMAction(commandArgs);
+      await SaveScrapAction(commandArgs);
+      return;
+    }
 
     if (!commandPrefix) {
       console.error('Please enter a bot prefix in the .env file');
@@ -21,7 +35,7 @@ const runBot = (token: string|undefined) => {
 
     const userCommand = msg.content.split(' ')[0].toLowerCase().replace(commandPrefix, '').trim();
 
-    const commandToRun:Command | undefined = Commands.find((command) => {
+    const commandToRun:Command | undefined = Commands.find((command: Command) => {
       if (command.name.toLowerCase() === userCommand
                 || command.triggers.includes(userCommand)) {
         return command;
@@ -30,12 +44,8 @@ const runBot = (token: string|undefined) => {
       return null;
     });
 
-    const commandArgs: CommandArgs = {
-      msg,
-    };
-
     if (commandToRun) {
-      commandToRun.action(commandArgs);
+      (commandToRun as Command).action(commandArgs);
     }
   };
 
@@ -47,7 +57,7 @@ const runBot = (token: string|undefined) => {
     .then(() => {
       Mongodb.connect();
       console.log('Bot logged in');
-      console.log('Commands: \n', Commands.map((command) => command.name));
+      console.log('Commands: \n', Commands.map((command: Command) => command.name));
     })
     .catch((err: Error) => {
       console.log('Failed to login\n', err.message);
