@@ -8,25 +8,30 @@ export interface IResourceLog extends Document{
     discriminator: string,
 }
 
-export const ResourceLogSchema = new Schema({
-  userId: {
-    unique: true,
-    required: true,
-    type: String,
+export const ResourceLogSchema = new Schema(
+  {
+    userId: {
+      unique: true,
+      required: true,
+      type: String,
+    },
+    username: {
+      required: true,
+      type: String,
+    },
+    rmCount: {
+      type: Number,
+      default: 0,
+    },
+    scrapCount: {
+      type: Number,
+      default: 0,
+    },
   },
-  username: {
-    required: true,
-    type: String,
+  {
+    timestamps: true,
   },
-  rmCount: {
-    type: Number,
-    default: 0,
-  },
-  scrapCount: {
-    type: Number,
-    default: 0,
-  },
-});
+);
 
 const ResourceLog = model<IResourceLog>('ResourceLog', ResourceLogSchema);
 export default ResourceLog;
