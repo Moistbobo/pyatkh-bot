@@ -6,6 +6,8 @@ import { CommandArgs } from '../types/CommandArgs';
 import Mongodb from './Mongodb';
 import SaveRMAction from '../commands/SaveRM/action';
 import SaveScrapAction from '../commands/SaveScrap/action';
+import Log36mmAction from '../commands/Log36mm/action';
+import Log120mmAction from '../commands/Log120mm/action';
 
 const runBot = (token: string|undefined) => {
   if (!token) {
@@ -46,6 +48,8 @@ const runBot = (token: string|undefined) => {
     } else if (AppConfig.rareMetalChannelId.includes(msg.channelId)) {
       await SaveRMAction(commandArgs);
       await SaveScrapAction(commandArgs);
+      await Log36mmAction(commandArgs);
+      await Log120mmAction(commandArgs);
     }
   };
 
