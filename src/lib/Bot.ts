@@ -49,7 +49,7 @@ const runBot = (token: string|undefined) => {
     }
   };
 
-  client.on('message', onMessage);
+  client.on('messageCreate', onMessage);
 
   client.login(token)
     .then(() => {
