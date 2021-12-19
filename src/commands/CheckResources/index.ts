@@ -3,7 +3,7 @@ import { Command } from '../../types/Command';
 
 const CheckResources: Command = {
   name: 'Check Resources',
-  triggers: ['check', 'checkResources', 'c', 'cs'],
+  triggers: ['check', 'checkResources', 'c', 'cr'],
   description: 'Check resources for yourself. Mention a user or username to check resources for a user.',
   usage: '.c\n.cs @Pyatkh',
   action,
