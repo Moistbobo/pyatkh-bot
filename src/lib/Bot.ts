@@ -13,6 +13,8 @@ const runBot = (token: string|undefined) => {
     return;
   }
 
+  const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_TYPING', 'GUILD_MESSAGE_REACTIONS'] });
+
   const onMessage = async (msg: Discord.Message) => {
     if (msg.author.bot) return;
 
@@ -20,13 +22,8 @@ const runBot = (token: string|undefined) => {
 
     const commandArgs: CommandArgs = {
       msg,
+      client,
     };
-
-    if (msg.channelId === AppConfig.rareMetalChannelId) {
-      await SaveRMAction(commandArgs);
-      await SaveScrapAction(commandArgs);
-      return;
-    }
 
     if (!commandPrefix) {
       console.error('Please enter a bot prefix in the .env file');
@@ -37,7 +34,7 @@ const runBot = (token: string|undefined) => {
 
     const commandToRun:Command | undefined = Commands.find((command: Command) => {
       if (command.name.toLowerCase() === userCommand
-                || command.triggers.includes(userCommand)) {
+          || command.triggers.includes(userCommand)) {
         return command;
       }
 
@@ -46,10 +43,11 @@ const runBot = (token: string|undefined) => {
 
     if (commandToRun) {
       (commandToRun as Command).action(commandArgs);
+    } else if (AppConfig.rareMetalChannelId.includes(msg.channelId)) {
+      await SaveRMAction(commandArgs);
+      await SaveScrapAction(commandArgs);
     }
   };
-
-  const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_TYPING', 'GUILD_MESSAGE_REACTIONS'] });
 
   client.on('message', onMessage);
 
